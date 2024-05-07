@@ -1,18 +1,27 @@
-﻿say 'Raku';
+﻿sub show($msg, $n) {
+    print "$msg ({$n.^name}): ";
+    say $n;
+}
 
-say '$*CWD ' ~ $*CWD; # 運行目錄
-say '$*EXECUTABLE ' ~ $*EXECUTABLE;
+show('$*CWD', $*CWD);
+
+show('$*EXECUTABLE', $*EXECUTABLE);
+
 # say $*ARGFILES;
+
+say @*ARGS.WHAT(); # Array
 print '@*ARGS ';
 say @*ARGS;
-say '$*PROGRAM-NAME ' ~ $*PROGRAM-NAME;
-say '$*PROGRAM ' ~ $*PROGRAM;
 
-sub script-path {
+show('$*PROGRAM-NAME', $*PROGRAM-NAME);
+
+show('$*PROGRAM', $*PROGRAM);
+
+sub script-path( --> IO::Path ) {
     return $*PROGRAM.absolute($*CWD).IO.resolve;
 }
 
-sub script-dir {
+sub script-dir( --> IO::Path ) {
     return script-path.parent;
 }
 
@@ -24,18 +33,13 @@ say $script-path.WHAT();
 
 my IO::Path $script-dir = script-dir;
 
-my IO::Path $e-local = 'e:/local'.IO;
-
-my Str $basename = $e-local.basename;
-my IO::Path $parent = $e-local.parent;
-say "basename: $basename";
-say "parent: $parent";
-
-say $parent.add('local') eq $e-local;
-
 say $script-dir.add('dir') ~~ :e & :d; # 判斷目錄,也有.e .d .f方法
 my IO::Path $file =  $script-dir.add('dir/file.txt').resolve;
 if $file ~~ :e & :f { # 判斷文件
     say "has $file";
-    say $file.s;
+    my Str $basename = $file.basename;
+    my IO::Path $parent = $file.parent;
+    say "basename: $basename";
+    say "parent: $parent";
+    say "size: {$file.s}";
 }
